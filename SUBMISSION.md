@@ -3,11 +3,11 @@
 ## Members
 | Name | Matric number | Email |
 | --- | --- | --- |
-| <Lee Zi Jie> | <U2521931K | <LEEZ0111@e.ntu.edu.sg> |
-| <Kelvin Hou> | <U2521590H> | <YHOU010@e.ntu.edu.sg> |
-| <Tan Soon Kang> | <U2523802E> | <tans0450@e.ntu.edu.sg> |
-| <Samuel Liow> | <U2522584k> | <ZLIOW002@e.ntu.edu.sg> |
-| <Lew En Xun> | <U2522615A> | <LEWE0003@e.ntu.edu.sg> |
+| Lee Zi Jie | U2521931K | LEEZ0111@e.ntu.edu.sg |
+| Kelvin Hou | U2521590H | YHOU010@e.ntu.edu.sg |
+| Tan Soon Kang | U2523802E | TANS0450@e.ntu.edu.sg |
+| Samuel Liow | U2522584k | ZLIOW002@e.ntu.edu.sg |
+| Lew En Xun | U2522615A | LEWE0003@e.ntu.edu.sg |
 ## Approach
 Our driver is a predictive pure-pursuit controller that follows the organiser-provided centreline (`maps/icra26_compete_centerline.csv`). At startup it estimates curvature along the centreline and builds a speed profile: corner speed is limited by lateral acceleration (v^2 * curvature <= a_lat), then a backward pass enforces braking distance and a forward pass enforces the acceleration limit around the closed lap. At run time it samples that profile with a reaction-time margin so the car slows before a corner, and steers toward a lookahead point on the path, with a longer lookahead on straights and a shorter one in tight bends.
 
