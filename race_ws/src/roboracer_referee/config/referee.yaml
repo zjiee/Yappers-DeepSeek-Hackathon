@@ -1,0 +1,66 @@
+# Default referee settings. These are the OFFICIAL judging values: the judges
+# run with this file unchanged, so treat any local edits as practice only.
+#
+#   ros2 run roboracer_referee referee --ros-args --params-file <this file>
+#
+referee:
+  ros__parameters:
+    # --- identity -------------------------------------------------------
+    team: "unnamed_team"
+    run_id: ""                    # blank -> UTC timestamp
+    output_dir: "/hackathon/results"
+
+    # --- track ----------------------------------------------------------
+    # Metadata only. The AutoDRIVE Simulator owns the circuit, the lap counter
+    # and the collision detection; the referee never opens a map.
+    track: ""                     # blank -> the default in maps/tracks.yaml
+    track_config: ""              # blank -> search the standard locations
+
+    # --- race format ----------------------------------------------------
+    # Unscored laps before timing starts: the out lap and the warm-up lap, as
+    # on Track 1. The simulator spawns the car most of a circuit before its own
+    # start/finish line, so the run from the grid closes as a lap in its own
+    # right - that is the out lap - and the granted warm-up lap follows it.
+    warmup_laps: 2
+    timed_laps: 10
+    collision_penalty_s: 10.0     # per contact with the track boundary
+    # Strictly more than this disqualifies the run, as on Track 1. The referee
+    # ends the run the moment it is exceeded rather than letting the car finish
+    # - a car that has hit the boundary eleven times is not racing any more.
+    # A negative value disables the limit and lets any run finish and be ranked.
+    max_collisions: 10
+
+    # --- tolerances -----------------------------------------------------
+    # A "lap" the simulator reports faster than this is telemetry noise, not a
+    # lap. It is recorded with a warning rather than silently dropped.
+    min_lap_time_s: 1.0
+
+    # --- run limits (simulated seconds) ---------------------------------
+    session_timeout_s: 900.0      # 15 minutes of simulated time for 12 laps
+    stuck_speed_mps: 0.05
+    stuck_timeout_s: 15.0
+
+    # --- startup (wall-clock seconds) -----------------------------------
+    # The simulator has to boot Unity and dial into the bridge, which takes
+    # longer than a ROS node coming up - hence the generous first value.
+    startup_timeout_s: 120.0      # for AutoDRIVE telemetry to appear
+    driver_timeout_s: 60.0        # for the first throttle/steering command
+    wall_timeout_s: 1800.0        # hard watchdog on the whole run
+
+    # --- the grid -------------------------------------------------------
+    # /autodrive/reset_command teleports the car to its spawn and zeroes the
+    # simulator's lap and collision counters. It is restricted for publishing
+    # (rule 31): the referee uses it, an entry may not.
+    reset_car: true
+    reset_hold_s: 0.5             # how long the reset is held high
+    reset_settle_s: 1.0           # then how long to let the telemetry catch up
+
+    # The bridge publishes lap_count before last_lap_time and collision_count,
+    # on separate topics. A lap change is therefore only acted on once it has
+    # been stable this long, so the lap is closed with its own time and not the
+    # previous one's. Eight frames at 40 Hz.
+    lap_settle_s: 0.2
+
+    # --- topics ---------------------------------------------------------
+    vehicle_ns: "/autodrive/roboracer_1"
+    reset_topic: "/autodrive/reset_command"

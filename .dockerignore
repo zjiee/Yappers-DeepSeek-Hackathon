@@ -1,0 +1,37 @@
+# The build context is the repository root, and almost none of it belongs in
+# the image. Keeping it small matters most in CI, where the context is
+# uploaded to the builder on every run.
+
+.git
+.github
+
+docs
+workshop
+results
+scripts
+
+# The AutoDRIVE Simulator is 140 MB of Unity binary and arrives through the
+# bind mount at /hackathon, never through the image. scripts/fetch_simulator.sh
+# puts it here.
+simulator
+
+race_ws/build
+race_ws/install
+race_ws/log
+race_ws/src/roboracer_referee
+workshop/ros2_ws/build
+workshop/ros2_ws/install
+workshop/ros2_ws/log
+
+**/__pycache__
+**/*.pyc
+docker/.env
+docker/.x11-placeholder
+
+# Kept on purpose, because the Dockerfile copies them:
+#   external/autodrive_devkit          the AutoDRIVE Devkit (ROS 2 API)
+#   maps/                              the circuit
+#   docker/entrypoint.sh               shell setup
+#   docker/devkit-requirements.txt     the devkit's Python dependencies
+#   race_ws/src/team_driver/*.txt      declared dependencies
+**/.git

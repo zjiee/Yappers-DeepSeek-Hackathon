@@ -1,0 +1,28 @@
+driver:
+  ros__parameters:
+    planner: pure_pursuit
+    centreline_csv: /hackathon/maps/icra26_compete_centerline.csv
+    max_range: 10.0 #LiDAR distance limit, in metres.
+    max_speed: 3.5 #Maximum target speed, in m/s. Actual speed can overshoot.
+    corner_speed: 0.4  #Used only by gap mode. Doesn’t control corners in the current pure-pursuit driver.
+    vehicle_half_width: 0.135  #Half the car’s physical width. Keep unchanged.
+    clearance_margin: 0.05 #Extra space allowed beside the car when checking obstacles.
+    bubble_radius: 0.20 #Obstacle safety bubble; gap mode only. 
+    disparity_threshold: 0.30  #Distance jump treated as an obstacle edge; gap mode only.
+    stop_distance: 0.40 #Stops requesting forward motion when an obstacle is this close ahead.
+    lookahead: 0.65 #Base distance ahead along the path that steering aims toward.
+    speed_feedforward: 0.04 #Estimated throttle needed per m/s of target speed.
+    speed_kp: 0.10 #How strongly throttle reacts to current speed error.
+    speed_ki: 0.04 #Corrects speed errors that persist over time.
+    max_throttle: 0.16 #Maximum positive motor command—not a speed.
+    max_brake: 0.04 #Maximum negative motor command used for braking; reduced while turning.
+    acceleration_limit: 2.0 #How quickly the target speed can increase, in m/s².
+    lateral_acceleration: 3.3 #Cornering allowance. Higher means faster corner targets, but requires more grip.
+    braking_deceleration: 1.3 #Deceleration the planner assumes is achievable. Higher means it plans to brake later; it doesn’t make the brakes stronger.
+    braking_reaction_time: 0.20 #Time allowance for responding before a turn or obstacle. Larger means earlier slowing.
+    braking_margin: 0.15 #Additional distance allowance for slowing down.
+    lookahead_time: 0.08 #Adds steering lookahead as speed increases on straights. 
+    max_lookahead: 0.95 #Maximum steering lookahead distance.
+    acceleration_feedforward: 0.025 #Adds throttle when the target speed rises and reduces it when the target falls.
+    brake_kp: 0.05 #How strongly braking responds to overspeed. 
+    brake_deadband: 0.15 #Allows this much overspeed, in m/s, before active braking begins.

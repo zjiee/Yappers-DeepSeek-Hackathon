@@ -1,0 +1,31 @@
+# Python packages your driver needs, one per line, in pip syntax.
+#
+# Whatever is listed here is installed into the Docker image when it is built,
+# so it is available during judging. Anything you use but do not list will not
+# be there: a judged run has no network access. See rule 37 in docs/06-rules.md.
+#
+# Pin versions. "scikit-learn" resolves to whatever is newest on the day the
+# judges build; "scikit-learn==1.3.2" resolves to what you tested.
+#
+#   scikit-learn==1.3.2
+#   networkx==2.6.3
+#
+# The image is ROS 2 Humble on Python 3.10, so pick wheels that exist for it.
+#
+# CAUTION - do not pin any of these:
+#
+#   python-socketio   python-engineio   gevent   gevent-websocket   greenlet
+#
+# The devkit's websocket bridge is pinned to old versions of them on purpose
+# (docker/devkit-requirements.txt explains why). Replace one and the bridge
+# connects to the simulator and then publishes nothing at all, silently, for
+# the whole run - which looks like a dead simulator, not a dependency clash.
+# Replacing numpy or transforms3d breaks it in a different way: ROS 2 Humble's
+# own packages are built against the versions apt installs.
+#
+# After adding anything here, rebuild from clean and check a run still starts:
+#
+#   ./install/<your-os>/setup.sh --no-cache
+#   ./scripts/evaluate.sh --team check --laps 2
+#
+# Also list what you added, and why, in SUBMISSION.md.

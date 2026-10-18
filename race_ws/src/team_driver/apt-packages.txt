@@ -1,0 +1,16 @@
+# System packages your driver needs, one per line, as apt would take them.
+#
+# Same rules as requirements.txt: declared packages are installed into the
+# image at build time, undeclared ones are simply absent during judging. See
+# rule 37 in docs/06-rules.md.
+#
+#   libspatialindex-dev
+#   ros-humble-slam-toolbox
+#
+# The image is ROS 2 Humble on Ubuntu 22.04, so ROS packages are
+# ros-humble-<name>.
+#
+# Most teams need nothing here. Reach for a Python package first - the one
+# common exception is a SLAM stack, if you are mapping the circuit yourself.
+#
+# Also list what you added, and why, in SUBMISSION.md.
