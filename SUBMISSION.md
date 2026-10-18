@@ -38,7 +38,7 @@ The two aborted runs happened while setting up: a stale, suspended bridge proces
 | <Intel Core Ultra 7 270K Plus> | <RTX 5070> | <32GB> | Windows <Windows 11>, Ubuntu on WSL 2 with Docker Desktop | <results/yappers__20261018T075350Z.json
 results/yappers__20261018T083212Z.json> |
 
-Both completed runs were headless, via `./scripts/evaluate.sh`.
+nano SUBMISSION.mdBoth completed runs were headless, via `./scripts/evaluate.sh`.
 
 ## Anything precomputed
 Nothing is trained or precomputed offline. The speed profile is computed at startup from the organiser's centreline file.
