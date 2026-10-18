@@ -1,0 +1,62 @@
+# Compose project for the Track 2 racing environment.
+#
+# Do not invoke this directly - install/<os>/run.sh writes docker/.env with the
+# right DISPLAY and profile for your platform and then calls compose for you.
+#
+#   Linux / WSLg : renders on the host X server
+#   macOS / any  : profile "novnc" - renders to a browser at localhost:8080
+
+services:
+  sim:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: ${IMAGE_NAME:-roboracer_track2}
+    container_name: ${CONTAINER_NAME:-roboracer_track2}
+    hostname: roboracer
+    init: true
+    stdin_open: true
+    tty: true
+    # Unity maps a good deal of shared memory on startup; the 64 MB default is
+    # not enough and the failure it produces names neither Unity nor /dev/shm.
+    shm_size: "2gb"
+    ports:
+      # The devkit bridge listens here and the simulator dials in to it. It is
+      # published so that a simulator running natively on macOS or Windows can
+      # reach the bridge inside the container - see docs/01-setup.md.
+      - "${AUTODRIVE_PORT:-4567}:4567"
+    environment:
+      - DISPLAY=${DISPLAY:-:0}
+      - QT_X11_NO_MITSHM=1
+      - LIBGL_ALWAYS_SOFTWARE=${LIBGL_ALWAYS_SOFTWARE:-0}
+      - ROS_DOMAIN_ID=${ROS_DOMAIN_ID:-0}
+      # NOT ROS_LOCALHOST_ONLY: with the port published, the bridge has to be
+      # reachable from outside the container's loopback.
+      - XDG_RUNTIME_DIR=/tmp/runtime-root
+    volumes:
+      # The whole repository, so race_ws, the simulator and results are shared
+      # with the host.
+      - ..:/hackathon
+      - ${X11_SOCKET:-/tmp/.X11-unix}:/tmp/.X11-unix:rw
+    networks:
+      - roboracer
+    command: ["bash"]
+
+  novnc:
+    image: theasp/novnc:latest
+    container_name: ${CONTAINER_NAME:-roboracer_track2}_novnc
+    profiles: ["novnc"]
+    environment:
+      - DISPLAY_WIDTH=${NOVNC_WIDTH:-1600}
+      - DISPLAY_HEIGHT=${NOVNC_HEIGHT:-900}
+      - RUN_XTERM=no
+    ports:
+      - "${NOVNC_PORT:-8080}:8080"
+    networks:
+      roboracer:
+        aliases:
+          - novnc
+
+networks:
+  roboracer:
+    name: ${COMPOSE_PROJECT_NAME:-roboracer_track2}_net

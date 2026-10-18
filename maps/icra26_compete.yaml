@@ -1,0 +1,26 @@
+# Occupancy grid of the ICRA 2026 compete circuit.
+#
+# Traced by the organisers from the simulator itself: ground-truth pose from
+# .../odom plus the 1080-beam LiDAR, ray-carved into a grid over several laps.
+# Every sample of the recorded driving line falls on a free cell and none on a
+# wall, which is the check that matters - a map that disagrees with the
+# simulator is worse than no map at all.
+#
+# free_thresh is the ROS default of 0.196 and not 0.25, deliberately. The grid
+# has three values - 0 for the boundary, 254 for the track surface, 205 for
+# everything outside it - and map_server turns a pixel into a probability with
+# (255 - value) / 255, so 205 gives exactly 0.19607... The oddly specific
+# default exists so that value lands in the "unknown" band rather than under
+# it. At 0.25 the outfield reads as free space and a planner will cheerfully
+# cut the corner across it.
+#
+# Nothing here is used to score a run - the simulator does that. See
+# docs/05-evaluation.md.
+
+image: icra26_compete.pgm
+mode: trinary
+resolution: 0.050
+origin: [-7.960, -13.230, 0.0]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.196

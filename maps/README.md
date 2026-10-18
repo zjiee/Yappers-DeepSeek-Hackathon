@@ -1,0 +1,57 @@
+# maps/
+
+**Nothing in this directory is used to score a run.** The AutoDRIVE Simulator
+owns the circuit, the start/finish line, the lap counter and the collision
+detection, and publishes all of it over the devkit bridge. The referee reads
+that telemetry. See [docs/05-evaluation.md](../docs/05-evaluation.md).
+
+What is here is for *your* planning.
+
+| File | What it is |
+| --- | --- |
+| `tracks.yaml` | Track metadata: the name in your result file, where the map lives, and the planning geometry |
+| `icra26_compete.pgm` + `.yaml` | Occupancy grid of the compete circuit |
+| `icra26_compete_centerline.csv` | Traced from the grid by `scripts/track_tool.py centerline` |
+
+## Where the grid came from
+
+The AutoDRIVE Simulator ships the circuit as Unity geometry, not as an
+occupancy grid, so this one was traced from the simulator itself: ground-truth
+pose plus the 1080-beam LiDAR, ray-carved into a grid over several laps.
+
+It is checked against the thing it claims to describe. Every sample of a
+recorded driving line falls on a free cell and none on a wall, and
+`pure_pursuit` drives the centreline traced from it — a 19.87 s lap with no
+contact. A map that quietly disagrees with the simulator is worse than no map,
+so if you ever find this one disagreeing, that is a bug worth reporting
+(rule 49).
+
+Measured from the grid:
+
+| | |
+| --- | --- |
+| Grid | 220 × 476 px at 5 cm, origin (−7.96, −13.23) |
+| Circuit bounding box | about 6.3 × 18.2 m |
+| Lap length | 54.4 m down the traced centreline |
+| Corridor width | about 2 m typical, under 1 m at the tightest point |
+| Spawn | (0.80, 3.16) facing −y |
+| Lap boundary | y = 3.80, just behind the grid slot |
+
+**Building your own is still worth doing.** Ours is good enough to plan
+against; it is not perfect, and a better one — or your own localisation
+against it — is worth bonus marks at the interview (rule 45).
+
+## Adding your own
+
+Drop any `<name>.pgm` + `<name>.yaml` pair in here and point a tool at it, and
+keep any racing line you generate here too — a path CSV in the
+`s; x; y; psi; kappa; vx; ax` layout is the conventional format and the one
+`./scripts/track_tool.py` writes. Load it from your driver by path:
+
+```sh
+ros2 run team_driver driver --ros-args \
+    -p raceline_csv:=/hackathon/maps/my_line.csv
+```
+
+Files you add here are yours and are not checked by
+`./scripts/verify_judging_env.sh` — unlike `tracks.yaml`, which is.

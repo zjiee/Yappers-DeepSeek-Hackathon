@@ -1,0 +1,43 @@
+# Python dependencies for the AutoDRIVE Devkit bridge.
+#
+# These are the upstream pins from
+# external/autodrive_devkit/requirements_python_3.10.txt, minus everything the
+# distribution already provides. They look absurdly old. They are correct, and
+# the temptation to modernise them has to be resisted - see below.
+#
+# --- why the socket.io versions are pinned this far back -------------------
+# The simulator opens its websocket with:
+#
+#     GET /socket.io/?EIO=4&transport=websocket
+#
+# which says Engine.IO v4 and is a lie. Its client is a Unity/websocket-sharp
+# implementation that hardcodes that query string while speaking the Engine.IO
+# v3 framing that python-engineio 3.x implements. Install python-socketio 5.x
+# and python-engineio 4.x - which genuinely do speak v4 - and the TCP
+# connection establishes, the socket sits there ESTABLISHED, the handshake
+# never completes, and the bridge's `connect` handler never fires. Every ROS
+# topic appears in `ros2 topic list` and not one of them ever publishes.
+#
+# If you are here because something broke: check `netstat -tnp | grep 4567`.
+# An ESTABLISHED socket plus a silent bridge is this, every time.
+#
+# --- why numpy, Pillow, OpenCV and transforms3d are NOT here ---------------
+# They come from apt instead, in the Dockerfile's first step. ROS 2 Humble's
+# rclpy, cv_bridge and tf_transformations are built against the distribution's
+# numpy 1.21 and transforms3d 0.3.1; letting pip replace either gives a bridge
+# that imports and then dies on the first image or the first quaternion. (pip
+# cannot even remove the apt transforms3d - it is a distutils install, and the
+# attempt fails the build outright.)
+
+eventlet==0.33.3
+python-socketio==4.2.0
+python-engineio==3.13.0
+greenlet==1.1.0
+gevent==21.12.0
+gevent-websocket==0.10.1
+
+# `attrdict3` is the maintained fork of `attrdict`, which the devkit's
+# config.py imports and which has been broken since Python 3.10. It installs
+# under the same module name, so nothing in the devkit has to change - and
+# nothing in the devkit is allowed to change (rule 29).
+attrdict3==2.0.2

@@ -1,0 +1,60 @@
+# Track metadata for the NTU DeepSpeed Recruitment Hackathon 26/27 - Track 2.
+#
+# READ THIS FIRST: nothing in this file scores a run.
+#
+# On Track 2 the circuit lives inside the AutoDRIVE Simulator build. The
+# simulator owns the start/finish line, counts the laps, times them and detects
+# contact with the track boundary, and publishes all of it through the devkit
+# bridge. The referee reads those numbers. It never opens a map.
+#
+# What this file is for:
+#   * the track name that lands in your result JSON;
+#   * pointing scripts/track_tool.py - and whatever path follower you write -
+#     at an occupancy grid of the circuit, so you can build a racing line or
+#     your own localisation against it.
+#
+# Fields (all optional except map_path)
+#   map_path           absolute path inside the container, WITHOUT the
+#                      extension. /hackathon is this repository, bind-mounted.
+#   map_image_ext      image extension for the map (.pgm or .png)
+#   simulator_build    the AutoDRIVE release this track ships in
+#   start_pose         [x, y, theta] in the simulator's `world` frame - planning
+#                      only, the simulator decides where the car spawns
+#   finish_line        [[x1, y1], [x2, y2]] - planning only, used by
+#                      track_tool.py to trace a closed lap
+#   crossing_direction optional +1/-1; inferred from the start heading
+#
+# After the map is published, check the numbers against the image:
+#     ./scripts/track_tool.py validate
+
+default: icra26_compete
+
+tracks:
+  icra26_compete:
+    description: >-
+      The official circuit: the "compete" phase track of the RoboRacer Sim
+      Racing League @ ICRA 2026, as shipped in the AutoDRIVE Simulator compete
+      build. Roughly 30 x 10 m, bounded by 33 cm air ducts, at least three car
+      widths (90 cm) wide throughout. You have never driven it and neither has
+      anyone else.
+
+    simulator_build: 2026-icra/compete
+
+    # The occupancy grid is NOT part of the simulator download - it is traced
+    # separately and lives here. The referee never opens it; it is for your
+    # planning, and for scripts/track_tool.py. See maps/README.md.
+    map_path: /hackathon/maps/icra26_compete
+    map_image_ext: .pgm
+
+    # Both are planning aids for track_tool.py. The simulator spawns the car
+    # and decides what a lap is; these only tell the centreline tracer where to
+    # start and which way round to go.
+    #
+    # Measured from the simulator: the car spawns here facing -y (-90 deg).
+    start_pose: [0.80, 3.16, -1.5708]
+
+    # The lap boundary, measured by watching where .../lap_count increments.
+    # It sits at y = 3.80, just behind the grid slot, and spans the 1.65 m
+    # corridor the car crosses it in - the circuit passes this latitude three
+    # times, so the line must not run across the other two.
+    finish_line: [[-0.06, 3.80], [1.49, 3.80]]
